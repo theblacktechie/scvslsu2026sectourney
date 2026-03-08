@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>South Carolina vs. LSU · SEC Tournament 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sc: #73000A; --sc-faded: rgba(115,0,10,0.18);
+    --lsu: #461D7C; --lsu-faded: #b0a8c8;
+    --bg: #F8F8F7; --text: #111; --muted: #444; --soft: #888; --border: #E0E0E0;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px 24px; }
+  .container { max-width: 1140px; margin: 0 auto; }
+
+  /* HEADER — centered */
+  .header { text-align: center; margin-bottom: 0; padding-bottom: 0; }
+  .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); margin-bottom: 10px; }
+  .headline { font-size: clamp(26px, 4vw, 48px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .headline .sc { color: var(--sc); }
+  .headline .lsu { color: var(--lsu); }
+  .subhead { font-size: 14px; color: var(--muted); line-height: 1.5; max-width: 560px; margin: 0 auto; }
+
+  /* SCORE — compact scoreboard */
+  .score-wrap { background: transparent; border: none; margin-bottom: 22px; padding: 18px 0; max-width: 380px; margin-left: auto; margin-right: auto; }
+  .score-body { display: flex; align-items: flex-start; justify-content: flex-start; gap: 0; }
+  .score-team { width: 180px; flex-shrink: 0; text-align: center; }
+  .score-team.lsu-side { text-align: center; }
+  .score-team-name { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
+  .score-team-name.sc { color: var(--sc); }
+  .score-team-name.lsu { color: var(--lsu-faded); }
+  .score-big { font-size: 80px; font-weight: 900; line-height: 1; letter-spacing: -0.04em; }
+  .score-big.win { color: var(--sc); }
+  .score-big.lose { color: var(--lsu-faded); }
+  .score-qtrs { font-size: 11px; font-weight: 500; color: var(--soft); margin-top: 6px; letter-spacing: 0.03em; }
+  .score-mid { width: 60px; flex-shrink: 0; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 36px; }
+  .score-final-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); }
+  .winner-tag { display: inline-block; background: var(--sc); color: #fff; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; margin-top: 10px; }
+
+  /* KEY NUMBERS — consistent alignment */
+  .key-nums { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); background: #fff; margin-bottom: 24px; }
+  .kn { padding: 16px 18px; display: flex; flex-direction: column; }
+  .kn + .kn { border-left: 1px solid var(--border); }
+  .kn-val { font-size: clamp(24px, 2.8vw, 36px); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .kn-val.gc { color: var(--sc); }
+  .kn-val.lp { color: var(--lsu); }
+  .kn-lbl { font-size: 9.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #333; margin-bottom: 4px; line-height: 1.3; }
+  .kn-sub { font-size: 11px; color: var(--muted); margin-top: auto; }
+
+  /* SECTION LABEL */
+  .sec-lbl { font-size: 9.5px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--soft); margin-bottom: 12px; }
+
+  /* TWO-COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+  /* IDENTITY CARDS */
+  .identity-card { background: #fff; border: 1px solid var(--border); padding: 18px 20px; }
+  .identity-card.sc { border-top: 3px solid var(--sc); }
+  .identity-card.lsu { border-top: 3px solid var(--lsu); }
+  .id-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .id-name { font-size: 13px; font-weight: 800; }
+  .id-name.sc { color: var(--sc); }
+  .id-name.lsu { color: var(--lsu); }
+  .toggle { display: flex; background: #EBEBEB; border-radius: 5px; padding: 2px; gap: 2px; }
+  .toggle-btn { font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 11px; border-radius: 3px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.15s; }
+  .toggle-btn.active.sc { background: var(--sc); color: #fff; }
+  .toggle-btn.active.lsu { background: var(--lsu); color: #fff; }
+  .id-panel { display: none; }
+  .id-panel.active { display: flex; }
+  .id-stat { flex: 1; }
+  .id-stat + .id-stat { border-left: 1px solid var(--border); padding-left: 16px; }
+  .id-val { font-size: clamp(20px, 2.5vw, 28px); font-weight: 900; letter-spacing: -0.02em; line-height: 1; }
+  .id-val.sc { color: var(--sc); }
+  .id-val.lsu { color: var(--lsu); }
+  .id-lbl { font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+  /* H2H TAB */
+  .tab-bar { display: flex; background: #EBEBEB; border-radius: 6px; padding: 3px; gap: 3px; margin-bottom: 14px; width: fit-content; }
+  .tab-btn { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; padding: 5px 16px; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.15s; }
+  .tab-btn.active { background: #fff; color: #111; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  /* DUEL BARS */
+  .duel-wrap { background: #fff; border: 1px solid var(--border); padding: 18px 24px; margin-bottom: 24px; }
+  .duel-hdr { display: grid; grid-template-columns: 1fr 150px 1fr; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid #111; }
+  .duel-hdr-sc { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sc); }
+  .duel-hdr-c { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--soft); text-align: center; }
+  .duel-hdr-lsu { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lsu); text-align: right; }
+  .stat-row { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .stat-row:last-child { border-bottom: none; }
+  .bar-side { display: flex; align-items: center; gap: 10px; }
+  .bar-side.right { flex-direction: row-reverse; }
+  .stat-val { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
+  .stat-val.sc { color: var(--sc); }
+  .stat-val.lsu { color: var(--lsu); }
+  .stat-val.mu { color: #ccc; }
+  .bar-track { flex: 1; height: 4px; background: #eee; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; width: 0%; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .bar-fill.sc { background: var(--sc); }
+  .bar-fill.lsu { background: var(--lsu); }
+  .stat-center { text-align: center; }
+  .stat-name { font-size: 9.5px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 5px; }
+  .badge { display: inline-block; font-size: 8px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; padding: 2px 8px; color: #fff; }
+  .badge.sc { background: var(--sc); }
+  .badge.lsu { background: var(--lsu); }
+
+  /* PLAYERS — 3-col */
+  .players-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .player-card { background: #fff; border: 1px solid var(--border); padding: 16px 18px; }
+  .player-card.sc { border-top: 3px solid var(--sc); }
+  .player-card.lsu { border-top: 3px solid var(--lsu); }
+  .p-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; margin-bottom: 2px; }
+  .p-tag.sc { color: var(--sc); }
+  .p-tag.lsu { color: var(--lsu); }
+  .p-name { font-size: 14px; font-weight: 800; color: #111; margin-bottom: 12px; }
+  .p-stats { display: flex; gap: 14px; }
+  .p-val { font-size: 22px; font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
+  .p-val.sc { color: var(--sc); }
+  .p-val.lsu { color: var(--lsu); }
+  .p-lbl { font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .p-detail { font-size: 10.5px; color: var(--soft); margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+
+  /* VERDICT */
+  .verdict-box { background: var(--sc); padding: 24px 28px; margin-bottom: 22px; }
+  .verdict-lbl { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+  .verdict-text { font-size: 15px; line-height: 1.68; color: #fff; }
+  .verdict-text strong { font-weight: 800; }
+
+  /* FOOTER — white bg, dark text */
+  .footer { border-top: 1px solid var(--border); padding-top: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .footer span { font-size: 11px; color: var(--soft); }
+
+  /* =====================
+     RESPONSIVE
+  ===================== */
+  /* Tablet */
+  @media (max-width: 900px) {
+    .players-grid { grid-template-columns: 1fr 1fr; }
+  }
+  /* Mobile */
+  @media (max-width: 680px) {
+    body { padding: 20px 16px; }
+    .two-col { grid-template-columns: 1fr; }
+    .players-grid { grid-template-columns: 1fr 1fr; }
+    .key-nums { grid-template-columns: 1fr 1fr; }
+    .kn:nth-child(3) { border-left: none; border-top: 1px solid var(--border); }
+    .kn:nth-child(4) { border-top: 1px solid var(--border); }
+    .score-wrap { max-width: 100%; padding: 18px 20px 14px; }
+    .score-team { width: 150px; }
+    .score-big { font-size: 66px; }
+    .score-mid { width: 48px; padding-top: 30px; }
+    .stat-row { grid-template-columns: 1fr 110px 1fr; gap: 8px; }
+    .duel-hdr { grid-template-columns: 1fr 110px 1fr; }
+    .headline { font-size: 26px; }
+  }
+  @media (max-width: 420px) {
+    .players-grid { grid-template-columns: 1fr; }
+    .score-big { font-size: 54px; }
+    .score-team { width: 130px; }
+    .score-mid { width: 40px; }
+    .key-nums { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="eyebrow">The Show · SEC Tournament · Quarterfinals · Mar. 7, 2026 · Greenville, SC</div>
+    <div class="headline"><span class="sc">South Carolina</span> vs. <span class="lsu">LSU</span></div>
+    <div class="subhead"><span style="color:#461D7C;font-weight:700;">The Show</span> vs <span style="color:#73000A;font-weight:700;">The Standard</span>. The numbers settle it.</div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-wrap">
+    <div class="score-body">
+      <div class="score-team">
+        <div class="score-team-name sc">South Carolina</div>
+        <div class="score-big win">83</div>
+        <div class="score-qtrs">21 · 15 · 23 · 24</div>
+        <div style="margin-top:10px; text-align:center"><span class="winner-tag">Winner</span></div>
+      </div>
+      <div class="score-mid">
+        <div class="score-final-lbl">Final</div>
+      </div>
+      <div class="score-team lsu-side">
+        <div class="score-team-name lsu">LSU</div>
+        <div class="score-big lose">77</div>
+        <div class="score-qtrs">17 · 23 · 14 · 23</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY NUMBERS -->
+  <div class="key-nums">
+    <div class="kn">
+      <div class="kn-val gc">19</div>
+      <div class="kn-lbl">Straight vs. LSU</div>
+      <div class="kn-sub">All-time active streak</div>
+    </div>
+    <div class="kn">
+      <div class="kn-val gc">7th</div>
+      <div class="kn-lbl">SEC Title Game</div>
+      <div class="kn-sub">Consecutive · Every year</div>
+    </div>
+    <div class="kn">
+      <div class="kn-val gc">5</div>
+      <div class="kn-lbl">Categories Won</div>
+      <div class="kn-sub">Of 6 head-to-head stats</div>
+    </div>
+    <div class="kn">
+      <div class="kn-val lp">1</div>
+      <div class="kn-lbl">LSU Category Won</div>
+      <div class="kn-sub">Free throw percentage</div>
+    </div>
+  </div>
+
+  <!-- TEAM IDENTITY -->
+  <div class="sec-lbl">Team Identity · Season Defining Stats</div>
+  <div class="two-col">
+    <div class="identity-card sc">
+      <div class="id-header">
+        <div class="id-name sc">South Carolina</div>
+        <div class="toggle">
+          <button class="toggle-btn active sc" onclick="switchTab('sc','off',this)">OFF</button>
+          <button class="toggle-btn sc" onclick="switchTab('sc','def',this)">DEF</button>
+        </div>
+      </div>
+      <div id="sc-off" class="id-panel active">
+        <div class="id-stat"><div class="id-val sc">76.4</div><div class="id-lbl">Pts / Game</div></div>
+        <div class="id-stat"><div class="id-val sc">43.1%</div><div class="id-lbl">FG%</div></div>
+        <div class="id-stat"><div class="id-val sc">16.8</div><div class="id-lbl">Ast / Game</div></div>
+      </div>
+      <div id="sc-def" class="id-panel">
+        <div class="id-stat"><div class="id-val sc">51.8</div><div class="id-lbl">Pts Allowed</div></div>
+        <div class="id-stat"><div class="id-val sc">44.2</div><div class="id-lbl">Reb / Game</div></div>
+        <div class="id-stat"><div class="id-val sc">+24.5</div><div class="id-lbl">Avg Margin</div></div>
+      </div>
+    </div>
+    <div class="identity-card lsu">
+      <div class="id-header">
+        <div class="id-name lsu">LSU</div>
+        <div class="toggle">
+          <button class="toggle-btn active lsu" onclick="switchTab('lsu','off',this)">OFF</button>
+          <button class="toggle-btn lsu" onclick="switchTab('lsu','def',this)">DEF</button>
+        </div>
+      </div>
+      <div id="lsu-off" class="id-panel active">
+        <div class="id-stat"><div class="id-val lsu">74.1</div><div class="id-lbl">Pts / Game</div></div>
+        <div class="id-stat"><div class="id-val lsu">41.8%</div><div class="id-lbl">FG%</div></div>
+        <div class="id-stat"><div class="id-val lsu">15.2</div><div class="id-lbl">Ast / Game</div></div>
+      </div>
+      <div id="lsu-def" class="id-panel">
+        <div class="id-stat"><div class="id-val lsu">60.3</div><div class="id-lbl">Pts Allowed</div></div>
+        <div class="id-stat"><div class="id-val lsu">38.7</div><div class="id-lbl">Reb / Game</div></div>
+        <div class="id-stat"><div class="id-val lsu">+19.2</div><div class="id-lbl">Avg Margin</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEAD TO HEAD -->
+  <div class="sec-lbl">Head to Head · Game Stats</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchStats('game', this)">This Game</button>
+    <button class="tab-btn" onclick="switchStats('season', this)">Season Avg</button>
+  </div>
+  <div class="duel-wrap">
+    <div class="duel-hdr">
+      <div class="duel-hdr-sc">South Carolina</div>
+      <div class="duel-hdr-c">Category</div>
+      <div class="duel-hdr-lsu">LSU</div>
+    </div>
+    <div id="stat-rows"></div>
+  </div>
+
+  <!-- PLAYERS -->
+  <div class="sec-lbl">Key Performers</div>
+  <div class="players-grid">
+    <div class="player-card sc">
+      <div class="p-tag sc">South Carolina</div>
+      <div class="p-name">Raven Johnson</div>
+      <div class="p-stats">
+        <div><div class="p-val sc">22</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val sc">8</div><div class="p-lbl">AST</div></div>
+        <div><div class="p-val sc">3</div><div class="p-lbl">REB</div></div>
+      </div>
+      <div class="p-detail">9-14 FG · 4-6 from three</div>
+    </div>
+    <div class="player-card sc">
+      <div class="p-tag sc">South Carolina</div>
+      <div class="p-name">Ta'Niya Latson</div>
+      <div class="p-stats">
+        <div><div class="p-val sc">19</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val sc">7-8</div><div class="p-lbl">FT</div></div>
+        <div><div class="p-val sc">1</div><div class="p-lbl">AST</div></div>
+      </div>
+      <div class="p-detail">6-13 FG</div>
+    </div>
+    <div class="player-card sc">
+      <div class="p-tag sc">South Carolina</div>
+      <div class="p-name">Joyce Edwards</div>
+      <div class="p-stats">
+        <div><div class="p-val sc">18</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val sc">11</div><div class="p-lbl">REB</div></div>
+        <div><div class="p-val sc">3</div><div class="p-lbl">AST</div></div>
+      </div>
+      <div class="p-detail">7-13 FG · 4-5 FT</div>
+    </div>
+    <div class="player-card lsu">
+      <div class="p-tag lsu">LSU</div>
+      <div class="p-name">MiLaysia Fulwiley</div>
+      <div class="p-stats">
+        <div><div class="p-val lsu">24</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val lsu">4</div><div class="p-lbl">AST</div></div>
+        <div><div class="p-val lsu">1</div><div class="p-lbl">REB</div></div>
+      </div>
+      <div class="p-detail">10-21 FG · 2-8 from three</div>
+    </div>
+    <div class="player-card lsu">
+      <div class="p-tag lsu">LSU</div>
+      <div class="p-name">Jada Richard</div>
+      <div class="p-stats">
+        <div><div class="p-val lsu">17</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val lsu">4</div><div class="p-lbl">AST</div></div>
+        <div><div class="p-val lsu">5</div><div class="p-lbl">REB</div></div>
+      </div>
+      <div class="p-detail">7-12 FG · 3-6 from three</div>
+    </div>
+    <div class="player-card lsu">
+      <div class="p-tag lsu">LSU</div>
+      <div class="p-name">Mikaylah Williams</div>
+      <div class="p-stats">
+        <div><div class="p-val lsu">14</div><div class="p-lbl">PTS</div></div>
+        <div><div class="p-val lsu">7</div><div class="p-lbl">REB</div></div>
+        <div><div class="p-val lsu">2-4</div><div class="p-lbl">3PT</div></div>
+      </div>
+      <div class="p-detail">5-12 FG</div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict-box">
+    <div class="verdict-lbl"><span style="color:#b39ddb;">The Show</span> <span style="color:rgba(255,255,255,0.35);">vs</span> <span style="color:#ffb3b3;">The Standard</span></div>
+    <div class="verdict-text">South Carolina won the turnover battle 9 to 14, the second-chance game 18 to 7, and out-painted LSU 44 to 38. Three Gamecocks in double figures. The defense was the show. <strong>The numbers don't lie and neither does the streak. 19 straight. Seven straight SEC title games.</strong></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Chart: Kris E. Smith · Sources: Sports Reference · SEC · ESPN</span>
+    <span>SEC Tournament · Mar. 7, 2026</span>
+  </div>
+
+</div>
+<script>
+function switchTab(team, panel, btn) {
+  ['off','def'].forEach(p => document.getElementById(`${team}-${p}`).classList.remove('active'));
+  btn.closest('.toggle').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`${team}-${panel}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+const gameStats = [
+  { label: "Points Scored",  sc: 83,   lsu: 77,   max: 100, hi: true },
+  { label: "Rebounds",       sc: 39,   lsu: 38,   max: 60,  hi: true },
+  { label: "Assists",        sc: 17,   lsu: 16,   max: 30,  hi: true },
+  { label: "Turnovers",      sc: 9,    lsu: 14,   max: 25,  hi: false },
+  { label: "3-Point %",      sc: 41.2, lsu: 33.3, max: 65,  hi: true, suffix: "%" },
+  { label: "Free Throw %",   sc: 80.0, lsu: 83.3, max: 100, hi: true, suffix: "%" },
+  { label: "Paint Points",   sc: 44,   lsu: 38,   max: 60,  hi: true },
+  { label: "2nd Chance Pts", sc: 18,   lsu: 7,    max: 25,  hi: true },
+];
+const seasonStats = [
+  { label: "Points / Game",   sc: 76.4, lsu: 74.1, max: 100, hi: true },
+  { label: "Pts Allowed",     sc: 51.8, lsu: 60.3, max: 85,  hi: false },
+  { label: "Rebounds / Game", sc: 44.2, lsu: 38.7, max: 60,  hi: true },
+  { label: "Assists / Game",  sc: 16.8, lsu: 15.2, max: 28,  hi: true },
+  { label: "Field Goal %",    sc: 43.1, lsu: 41.8, max: 65,  hi: true, suffix: "%" },
+  { label: "3-Point %",       sc: 28.4, lsu: 33.6, max: 55,  hi: true, suffix: "%" },
+];
+
+function renderStats(data) {
+  const wrap = document.getElementById('stat-rows');
+  wrap.innerHTML = '';
+  data.forEach(s => {
+    const scWins = s.hi ? s.sc >= s.lsu : s.sc <= s.lsu;
+    const sfx = s.suffix || '';
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `
+      <div class="bar-side">
+        <span class="stat-val ${scWins ? 'sc' : 'mu'}">${s.sc}${sfx}</span>
+        <div class="bar-track"><div class="bar-fill sc" data-w="${(s.sc/s.max*100).toFixed(1)}"></div></div>
+      </div>
+      <div class="stat-center">
+        <span class="stat-name">${s.label}</span>
+        <span class="badge ${scWins ? 'sc' : 'lsu'}">${scWins ? 'SC Edge' : 'LSU Edge'}</span>
+      </div>
+      <div class="bar-side right">
+        <span class="stat-val ${!scWins ? 'lsu' : 'mu'}">${s.lsu}${sfx}</span>
+        <div class="bar-track"><div class="bar-fill lsu" data-w="${(s.lsu/s.max*100).toFixed(1)}"></div></div>
+      </div>`;
+    wrap.appendChild(row);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill[data-w]').forEach(el => el.style.width = el.dataset.w + '%');
+  }, 60);
+}
+
+function switchStats(type, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStats(type === 'game' ? gameStats : seasonStats);
+}
+
+renderStats(gameStats);
+</script>
+</body>
+</html>
